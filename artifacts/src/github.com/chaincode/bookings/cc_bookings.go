@@ -153,7 +153,7 @@ func(t * BookingChaincode) initBookingDetails(stub shim.ChaincodeStubInterface, 
                 for j < len(bookingDetailsList) {
                     fmt.Println("j is ", j)
                     bookingDetailsAsBytes, _ := json.Marshal(bookingDetailsList[j])
-                    stub.PutState(bookingDetailsList[j].BookedByUser+strconv.Itoa(i), bookingDetailsAsBytes)
+                    stub.PutState(bookingDetailsList[j].BookedByUser+strconv.Itoa(j), bookingDetailsAsBytes)
                     fmt.Println("Added", bookingDetailsList[j])
                     j = j + 1
                 }

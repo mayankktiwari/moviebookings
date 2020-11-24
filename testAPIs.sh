@@ -48,7 +48,6 @@ echo "ORG2 token is $ORG2_TOKEN"
 echo
 echo
 echo " --- CREATE CHANNEL --- "
-echo
 curl -s -X POST \
 http://localhost:4000/channels \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -62,7 +61,6 @@ echo
 echo
 sleep 5
 echo " --- JOIN CHANNEL - ORG1 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/channels/mychannel/peers \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -73,7 +71,6 @@ http://localhost:4000/channels/mychannel/peers \
 echo
 echo
 echo " --- JOIN CHANNEL - ORG2 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/channels/mychannel/peers \
 -H "authorization: Bearer $ORG2_TOKEN" \
@@ -85,7 +82,6 @@ echo
 echo
 echo
 echo " --- INSTALL MOVIE CHAINCODE - ORG1 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/chaincodes \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -100,7 +96,6 @@ http://localhost:4000/chaincodes \
 echo
 echo
 echo " --- INSTALL MOVIE CHAINCODE - ORG2 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/chaincodes \
 -H "authorization: Bearer $ORG2_TOKEN" \
@@ -116,7 +111,6 @@ echo
 echo
 echo
 echo " --- INSTANTIATE MOVIE CHAINCODE --- "
-echo
 curl -s -X POST \
 http://localhost:4000/channels/mychannel/chaincodes \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -131,7 +125,6 @@ echo
 echo
 echo
 echo " --- INVOKE MOVIE CHAINCODE - ORG1 --- "
-echo
 TRX_ID=$(
     curl -s -X POST \
     http://localhost:4000/channels/mychannel/chaincodes/cc_movies \
@@ -147,7 +140,6 @@ echo "Transaction ID is $TRX_ID"
 echo
 echo
 echo " --- INVOKE MOVIE CHAINCODE - ORG2 --- "
-echo
 TRX_ID=$(
     curl -s -X POST \
     http://localhost:4000/channels/mychannel/chaincodes/cc_movies \
@@ -171,7 +163,6 @@ echo
 echo
 echo
 echo " --- INSTALL BOOKING CHAINCODE - ORG1 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/chaincodes \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -186,7 +177,6 @@ http://localhost:4000/chaincodes \
 echo
 echo
 echo " --- INSTALL BOOKING CHAINCODE - ORG2 --- "
-echo
 curl -s -X POST \
 http://localhost:4000/chaincodes \
 -H "authorization: Bearer $ORG2_TOKEN" \
@@ -202,7 +192,6 @@ echo
 echo
 echo
 echo " --- INSTATIATE BOOKING CHAINCODE --- "
-echo
 curl -s -X POST \
 http://localhost:4000/channels/mychannel/chaincodes \
 -H "authorization: Bearer $ORG1_TOKEN" \
@@ -217,7 +206,6 @@ echo
 echo
 echo
 echo " --- INVOKE BOOKING CHAINCODE - ORG1 --- "
-echo
 TRX_ID=$(
     curl -s -X POST \
     http://localhost:4000/channels/mychannel/chaincodes/cc_bookings \
@@ -233,7 +221,6 @@ echo "Transaction ID is $TRX_ID"
 echo
 echo
 echo " --- INVOKE BOOKING CHAINCODE - ORG2 --- "
-echo
 TRX_ID=$(
     curl -s -X POST \
     http://localhost:4000/channels/mychannel/chaincodes/cc_bookings \

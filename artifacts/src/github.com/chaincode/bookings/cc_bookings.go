@@ -24,8 +24,10 @@ type BookingDetails struct {
     MovieName string `json:"movieName"`
     TimeSlot string `json:"timeSlot"`
     ReqNmbrOfTickets int `json:"reqNmbrOfTickets"`
-    BookingTime time.Time `json:"bookingTime"`
     BookingId string `json:"bookingId"`
+    ReceiptId string `json:"receiptId"`
+    BeverageFlag string `json:"beverageFlag"`
+    BookingTime time.Time `json:"bookingTime"`
 }
 
 type movie struct {
@@ -91,7 +93,7 @@ func(t * BookingChaincode) initBookingDetails(stub shim.ChaincodeStubInterface, 
         return shim.Error("Expecting an integer value for Booking Number of Tickets")
     }
     currentTime := time.Now().Unix()
-    bookingId := strconv.Itoa(int(currentTime))
+    bookingId := bookedByUser + strconv.Itoa(int(currentTime))
 
     logger.Info("Booking Details: ", bookedByUser, movieName, timeSlot, reqNmbrOfTickets)
 
@@ -123,24 +125,32 @@ func(t * BookingChaincode) initBookingDetails(stub shim.ChaincodeStubInterface, 
         // Check whether seats available and remaining seats are greater then booked seat, book the seats for user.
         if resRemainingTickets > 0 && resRemainingTickets > reqNmbrOfTickets {
 
-            BookingDetails := &BookingDetails {
-                BookedByUser: bookedByUser,
-                MovieName: movieName,
-                TimeSlot: timeSlot,
-                ReqNmbrOfTickets: reqNmbrOfTickets,
-                BookingTime: time.Now(),
-                BookingId: bookingId }
+            currTime := time.Now().Unix()
+            receiptId := strconv.Itoa(int(currTime))
+            beverageFlag := "True"
 
-            bookingDetailsAsBytes, err := json.Marshal(BookingDetails)
-            if err != nil {
-                return shim.Error(err.Error())
-			}
-			
-            // Write the state to the ledger - Bookings
-            err = stub.PutState(bookedByUser, bookingDetailsAsBytes)
-            if err != nil {
-                return shim.Error(err.Error())
-			}
+            for i:=0; i<reqNmbrOfTickets; i++ {
+                BookingDetails := &BookingDetails {
+                    BookedByUser: bookedByUser,
+                    MovieName: movieName,
+                    TimeSlot: timeSlot,
+                    ReqNmbrOfTickets: reqNmbrOfTickets,
+                    BookingId: bookingId,
+                    ReceiptId: receiptId,
+                    BeverageFlag: beverageFlag,
+                    BookingTime: time.Now() }
+    
+                bookingDetailsAsBytes, err := json.Marshal(BookingDetails)
+                if err != nil {
+                    return shim.Error(err.Error())
+                }
+                
+                // Write the state to the ledger - Bookings
+                err = stub.PutState(bookedByUser, bookingDetailsAsBytes)
+                if err != nil {
+                    return shim.Error(err.Error())
+                }
+            }
 			
             // Updating the Movie data -- calling initMovieDetails after show book for user
             chainCodeArgs := util.ToChaincodeArgs("initMovieDetails", resMovieName, resTimeSlots, resTotalTicketsStr, remainingTicketsStr, resHouseFullFlag)

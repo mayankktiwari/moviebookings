@@ -45,11 +45,35 @@ func(t * MovieChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
         return t.initMovieDetails(stub, args)
     } else if function == "getMoviesByName" { // Get the Details according to the TimeSlot
         return t.getMoviesByName(stub, args)
-    }
+    } 
+    // else if function == "createDummyEntries" { // To create dummy data in DB
+    //     return t.createDummyEntries(stub)
+    // }
     fmt.Println("invoke did not find func: " + function) //error
     return shim.Error("Received unknown function invocation")
 }
 
+// func(t * MovieChaincode) createDummyEntries(stub shim.ChaincodeStubInterface) pb.Response {
+
+// 	movieDetailsList := []MovieDetails{
+//         MovieDetails{MovieName: "The Shawshank Redemption", AvailalbeTimeSlots: "9am-12pm", TotalTickets: 100, RemainingTickets: 100, HouseFullFlag: "False", ModificationTime: time.Now()},
+//         MovieDetails{MovieName: "The Shawshank Redemption", AvailalbeTimeSlots: "12pm-3pm", TotalTickets: 100, RemainingTickets: 100, HouseFullFlag: "False", ModificationTime: time.Now()},
+//         MovieDetails{MovieName: "The Shawshank Redemption", AvailalbeTimeSlots: "6pm-9pm", TotalTickets: 100, RemainingTickets: 3, HouseFullFlag: "False", ModificationTime: time.Now()},
+//         MovieDetails{MovieName: "The Godfather", AvailalbeTimeSlots: "9am-12pm", TotalTickets: 100, RemainingTickets: 0, HouseFullFlag: "True", ModificationTime: time.Now()},
+//         MovieDetails{MovieName: "The Godfather", AvailalbeTimeSlots: "12pm-3pm", TotalTickets: 100, RemainingTickets: 100, HouseFullFlag: "False", ModificationTime: time.Now()},
+//         MovieDetails{MovieName: "The Dark Knight", AvailalbeTimeSlots: "6pm-9pm", TotalTickets: 100, RemainingTickets: 100, HouseFullFlag: "False", ModificationTime: time.Now()} }
+
+// 	i := 0
+// 	for i < len(movieDetailsList) {
+// 		fmt.Println("i is ", i)
+// 		moviesAsBytes, _ := json.Marshal(movieDetailsList[i])
+// 		stub.PutState(movieDetailsList[i].MovieName+strconv.Itoa(i), moviesAsBytes)
+// 		fmt.Println("Added", movieDetailsList[i])
+// 		i = i + 1
+// 	}
+
+// 	return shim.Success(nil)
+// }
 // initMovieDetails - Creating record Movie name, time slots and total ticket for a show
 func(t * MovieChaincode) initMovieDetails(stub shim.ChaincodeStubInterface, args[] string) pb.Response {
 

@@ -46,7 +46,11 @@ With the application started in terminal 1, next, test the APIs by executing the
 ```
 cd moviebookings
 
-## To use golang chaincode execute the following command
+## For Channel Creation, Join Channel and Install/Instantiate channel run following 
+
+./networkSetup.sh
+
+#To run test cases
 
 ./testAPIs.sh
 

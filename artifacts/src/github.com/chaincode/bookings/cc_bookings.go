@@ -18,6 +18,8 @@ var logger = shim.NewLogger("Chaincode for Movie Bookings")
 type BookingChaincode struct {
 }
 
+var strFlag = "ExchangeFlagData"
+
 type BookingDetails struct {
 	BookedByUser     string    `json:"bookedByUser"`
 	MovieName        string    `json:"movieName"`
@@ -25,13 +27,19 @@ type BookingDetails struct {
 	ReqNmbrOfTickets int       `json:"reqNmbrOfTickets"`
 	BookingId        string    `json:"bookingId"`
 	SeatDetails      []SeatDetails    `json:"seatDetails"`
-	BookingTime string `json:"bookingTime"`
+    BookingTime string `json:"bookingTime"`
 }
 
 type SeatDetails struct {
-    SeatNumber string
-	ReceiptNumber string
-	BeverageFlag  string
+    SeatNumber    string     `json:"seatNumber"`
+	ReceiptNumber string    `json:"receiptNumber"`
+    BeverageFlag  string    `json:"beverageFlag"`
+    WaterToSodaExchangeFlag string `json:"waterToSodaExchangeFlag"`
+}
+
+type DatewiseBeverageExchangeDetails struct {
+    Date string `json:"date"`
+    DailyQuota string `json:"dailyQuota"`
 }
 
 type movie struct {
@@ -56,6 +64,15 @@ func main() {
 // Init initializes chaincode
 // ===========================
 func (t *BookingChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+    
+    // Initializing the Water to Soda exchange flag
+    current_time := time.Now()
+    date := string(current_time.Format("2006-January-02"))
+    dailyQuota := strconv.Itoa(200)
+    datewiseBeverageExchangeDetails := DatewiseBeverageExchangeDetails{Date: date, DailyQuota: dailyQuota}
+    datewiseBeverageExchangeBytes, _ := json.Marshal(datewiseBeverageExchangeDetails)
+    stub.PutState(strFlag, datewiseBeverageExchangeBytes)
+    
 	return shim.Success(nil)
 }
 
@@ -86,7 +103,7 @@ func (t *BookingChaincode) initBookingDetails(stub shim.ChaincodeStubInterface, 
 	var err error
 	if len(args) != 4 {
 		return shim.Error("Incorrect number of arguments. Expecting 4")
-	}
+    }
 
 	// Params for Ticket Bookings
 	bookedByUser := args[0]
@@ -130,14 +147,47 @@ func (t *BookingChaincode) initBookingDetails(stub shim.ChaincodeStubInterface, 
 
             // Creating list of SeatNumber, Receipts and Beverage Flag
 			seatDetailsList := []SeatDetails{}
-			i := 0
+            i := 0
+            var waterToSodaExchangeFlag string
 			for i < reqNmbrOfTickets {
-				seatNumber := strconv.Itoa(i)
-				receiptNumber := strconv.FormatInt(time.Now().Unix(), 10)
-				beverageFlag := "True"
+                seatNumber := strconv.Itoa(i)
+                currTime := time.Now()
+                currDateStr := string(currTime.Format("2006-January-02"))
+				receiptNumber := strconv.FormatInt(currTime.Unix(), 10)
+                beverageFlag := "True"
+
+                // Fetching data for Soda/Water exchange
+                remainingValueForDateBytes, _ := stub.GetState(strFlag)
+                var data DatewiseBeverageExchangeDetails
+                json.Unmarshal(remainingValueForDateBytes, &data)
+                date := data.Date
+                dailyQuota, _ := strconv.Atoi(data.DailyQuota)
+
+                if dailyQuota > 0 && date == currDateStr {
+                    waterToSodaExchangeFlag = "True"
+                    // dailyQuotaNewVal := dailyQuota - 1
+                    dailyQuotaNewVal := dailyQuota - reqNmbrOfTickets
+                    exchangeCountRemaining := strconv.Itoa(dailyQuotaNewVal)
+                    newData := DatewiseBeverageExchangeDetails{Date: date, DailyQuota: exchangeCountRemaining}
+                    newDataBytes, _ := json.Marshal(newData)
+                    stub.PutState(strFlag, newDataBytes)
+                } else {
+                    waterToSodaExchangeFlag = "False"
+                }
+
+                // Putting data into DatewiseBeverageExchangeDetails for next date
+                if dailyQuota == 0 && date == currDateStr {
+                    nextDay := currTime.AddDate(0, 0, 1)
+                    date := string(nextDay.Format("2006-January-02"))
+                    dailyQuota := strconv.Itoa(200)
+                    datewiseBeverageExchangeDetails := DatewiseBeverageExchangeDetails{Date: date, DailyQuota: dailyQuota}
+                    datewiseBeverageExchangeBytes, _ := json.Marshal(datewiseBeverageExchangeDetails)
+                    stub.PutState(strFlag, datewiseBeverageExchangeBytes)
+                }
+
 				fmt.Println("Receipt ID: ", receiptNumber)
 				fmt.Println("Seat Number: ", seatNumber)
-				seatDetailsObj := SeatDetails{SeatNumber: seatNumber, ReceiptNumber: receiptNumber, BeverageFlag: beverageFlag}
+				seatDetailsObj := SeatDetails{SeatNumber: seatNumber, ReceiptNumber: receiptNumber, BeverageFlag: beverageFlag, WaterToSodaExchangeFlag: waterToSodaExchangeFlag}
 				seatDetailsList = append(seatDetailsList, seatDetailsObj)
 				i = i + 1
             }

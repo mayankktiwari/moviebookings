@@ -34,7 +34,7 @@ ORG1_TOKEN=$(echo $ORG1_TOKEN | jq ".token" | sed "s/\"//g")
 echo
 echo "ORG1 token is $ORG1_TOKEN"
 echo
-# Setting Org2
+echo
 ORG2_TOKEN=$(
     curl -s -X POST \
     http://localhost:4000/users \
@@ -46,6 +46,19 @@ ORG2_TOKEN=$(echo $ORG2_TOKEN | jq ".token" | sed "s/\"//g")
 echo
 echo "ORG2 token is $ORG2_TOKEN"
 echo
+echo
+echo " --- INVOKE - CREATE DUMMY ENTRIES IN DB --- "
+TRX_ID=$(
+curl -s -X POST \
+http://localhost:4000/channels/mychannel/chaincodes/cc_movies \
+-H "authorization: Bearer $ORG1_TOKEN" \
+-H "content-type: application/json" \
+-d "{
+        \"peers\": [\"peer0.org1.example.com\",\"peer1.org1.example.com\"],
+        \"fcn\":\"createDummyEntries\",
+        \"args\":[]
+}"
+)
 echo
 echo "Transaction ID is $TRX_ID"
 echo
@@ -77,6 +90,7 @@ TRX_ID=$(
 }'
 )
 echo "Transaction ID is $TRX_ID"
+echo
 echo
 echo " --- INVOKE MOVIE CHAINCODE - ORG2 --- "
 TRX_ID=$(
@@ -117,12 +131,12 @@ TRX_ID=$(
     -d '{
                 "peers": ["peer0.org1.example.com","peer1.org1.example.com"],
                 "fcn":"initBookingDetails",
-                "args":["Rahul Dravid", "The Shawshank Redemption", "6pm-9pm", "6"]
+                "args":["Rahul Dravid", "The Grudge", "6pm-9pm", "6"]
 }'
 )
 echo "Transaction ID is $TRX_ID"
 echo
-
+echo
 echo
 echo " --- INVOKE BOOKING CHAINCODE - Book Another Ticket for Another movie --- "
 TRX_ID=$(
@@ -133,7 +147,7 @@ TRX_ID=$(
     -d '{
             "peers": ["peer0.org2.example.com","peer1.org2.example.com"],
             "fcn":"initBookingDetails",
-            "args":["David Warner", "The Godfather", "09am - 12pm", "9"]
+            "args":["David Warner", "The Dark Knight", "6pm-9pm", "9"]
 }'
 )
 echo "Transaction ID is $TRX_ID"

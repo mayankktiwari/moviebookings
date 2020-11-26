@@ -86,7 +86,7 @@ TRX_ID=$(
     -d '{
             "peers": ["peer0.org1.example.com","peer1.org1.example.com"],
             "fcn":"initMovieDetails",
-            "args":["The Shawshank Redemption", "6pm-9pm", "100", "3", "False"]
+            "args":["The Shawshank Redemption", "6pm-9pm", "100", "10", "False"]
 }'
 )
 echo "Transaction ID is $TRX_ID"
@@ -131,7 +131,7 @@ TRX_ID=$(
     -d '{
                 "peers": ["peer0.org1.example.com","peer1.org1.example.com"],
                 "fcn":"initBookingDetails",
-                "args":["Rahul Dravid", "The Grudge", "6pm-9pm", "6"]
+                "args":["Rahul Dravid", "The Shawshank Redemption", "6pm-9pm", "11"]
 }'
 )
 echo "Transaction ID is $TRX_ID"
@@ -147,7 +147,7 @@ TRX_ID=$(
     -d '{
             "peers": ["peer0.org2.example.com","peer1.org2.example.com"],
             "fcn":"initBookingDetails",
-            "args":["David Warner", "The Dark Knight", "6pm-9pm", "9"]
+            "args":["David Warner", "The Shawshank Redemption", "6pm-9pm", "9"]
 }'
 )
 echo "Transaction ID is $TRX_ID"

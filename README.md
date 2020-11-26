@@ -22,8 +22,14 @@ Once you have completed the above setup, you will have provisioned a local netwo
 * 4 peers (2 peers per Org)
 * CouchDB for each peer
 
+Chaincode location:
+artifacts/src/github.com/chaincode/bookings - chaincode for Ticket booking management
+artifacts/src/github.com/chaincode/movies - chaincode for Movie management
+
+
 ##### Terminal Window 1
 
+Following file is to make the Blockchain network up and running with clinet node running at 4000
 ```
 cd moviebookings
 
